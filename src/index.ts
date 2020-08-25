@@ -4,8 +4,10 @@ import mount from 'koa-mount';
 import schema from './graphql/schema';
 import root from './graphql/root';
 import mongoose from 'mongoose';
+import bodyParser from 'koa-bodyparser';
 
 const app = new Koa();
+app.use(bodyParser());
 
 mongoose.connect(`mongodb://127.0.0.1:27017/docker-mongo`, {
   useNewUrlParser: true,
@@ -15,7 +17,7 @@ mongoose.connect(`mongodb://127.0.0.1:27017/docker-mongo`, {
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => console.log('Database connected.'));
+db.once('open', () => console.log('🚀 Database connected.'));
 
 app.listen(9000);
 
