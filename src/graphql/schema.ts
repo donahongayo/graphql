@@ -2,17 +2,32 @@ import { buildSchema } from 'graphql';
 
 const typeDefs = buildSchema(`
 type User {
-  id: ID,
-  email: String
+  id: ID!
+  email: String! 
+  name: String
+}
+input CreateUserInput {
+  email: String!
+  password: String!
+  name: String
+}
+
+input UpdateProfileInput {
+  id: ID!
+  name: String
   password: String
-  name: String, 
 }
-type Query {
- listUsers: [User]
-}
+
 type Mutation {
-  createUser(email: String, name: String!, password: String): User
+  createUser(input: CreateUserInput!): User!
+  updateProfile(input: UpdateProfileInput!): User!
 }
+
+type Query {
+  users: [User!]!
+  user(id: ID!): User!
+}
+ 
 `);
 
 export default typeDefs;
