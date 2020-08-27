@@ -1,33 +1,32 @@
-import { buildSchema } from 'graphql';
+import { gql } from 'apollo-server-koa';
 
-const typeDefs = buildSchema(`
-type User {
-  id: ID!
-  email: String! 
-  name: String
-}
-input CreateUserInput {
-  email: String!
-  password: String!
-  name: String
-}
+const typeDefs = gql`
+  type User {
+    id: ID!
+    email: String!
+    name: String
+  }
+  input CreateUserInput {
+    email: String!
+    password: String!
+    name: String
+  }
 
-input UpdateProfileInput {
-  id: ID!
-  name: String
-  password: String
-}
+  input UpdateProfileInput {
+    id: ID!
+    name: String
+    password: String
+  }
 
-type Mutation {
-  createUser(input: CreateUserInput!): User!
-  updateProfile(input: UpdateProfileInput!): User!
-}
+  type Mutation {
+    createUser(input: CreateUserInput!): User!
+    updateProfile(input: UpdateProfileInput!): User!
+  }
 
-type Query {
-  users: [User!]!
-  user(id: ID!): User!
-}
- 
-`);
+  type Query {
+    users: [User!]!
+    user(id: ID!): User!
+  }
+`;
 
 export default typeDefs;
