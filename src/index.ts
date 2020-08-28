@@ -1,22 +1,39 @@
 /* eslint-disable no-empty */
 import Koa from 'koa';
-//import graphqlHTTP from 'koa-graphql';
-//import mount from 'koa-mount';
 import mongoose from 'mongoose';
 import bodyParser from 'koa-bodyparser';
 import koaRouter from 'koa-router';
 import { ApolloServer } from 'apollo-server-koa';
-import auth from './middleware/auth';
+import KoaAuth from 'koa-basic-auth';
+import jwt from 'jsonwebtoken';
 
-import * as graphlSchema from './graphql';
-
-const server = new ApolloServer(graphlSchema);
+import typeDefs from './graphql/schema';
+import resolvers from './graphql/resolvers';
+import config from './config/config';
+import mJwt from './middleware/jwt';
 
 const app = new Koa();
 const router = new koaRouter();
 
-app.use(router.routes());
-app.use(router.allowedMethods());
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: async ({ ctx }) => {
+    const authHeader = ctx.req.headers && ctx.req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split(' ')[1];
+      let auth;
+      try {
+        auth = jwt.verify(token, config.secret);
+      } catch (err) {}
+      if (auth.username == config.username) {
+        return { auth };
+      }
+    } else {
+      throw new Error('Unauthorized');
+    }
+  },
+});
 
 app.use(bodyParser());
 mongoose.connect(`mongodb://127.0.0.1:27017/docker-mongo`, {
@@ -34,17 +51,18 @@ app.on('error', (err) => {
   console.log('Server error', err);
 });
 
-server.applyMiddleware({ app });
+router.post(
+  '/api/auth',
+  KoaAuth({ name: config.username, pass: config.password }),
+  async (ctx) => {
+    ctx.body = {
+      token: mJwt,
+    };
+  },
+);
 
-/*app.use(
-  mount(
-    '/graphql',
-    graphqlHTTP({
-      schema,
-      rootValue: root,
-      graphiql: true,
-    }),
-  ),
-);*/
+app.use(router.routes());
+app.use(router.allowedMethods());
+server.applyMiddleware({ app });
 
 //export default server;
