@@ -9,7 +9,7 @@ const userRoot = {
       return User.find();
     },
     user: async (root: object, args: { id: string }) => {
-      const user = await User.findOne({ id: args.id }).exec();
+      const user = await User.findOne({ _id: args.id });
       return user;
     },
   },
@@ -24,8 +24,6 @@ const userRoot = {
       },
     ) => {
       const argsParse = JSON.parse(JSON.stringify(args));
-      //console.log(argsParse);
-      //console.log(argsParse.input.email);
       const account = await User.findOne({ email: argsParse.input.email });
       if (account) {
         throw new Error('Email exists');
@@ -49,7 +47,6 @@ const userRoot = {
       },
     ) => {
       const argsParse = JSON.parse(JSON.stringify(args));
-      console.log(argsParse);
       const documentQuery = { _id: argsParse.input.id };
       await User.updateOne(documentQuery, {
         password: argsParse.input.password,
