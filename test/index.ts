@@ -8,8 +8,8 @@ import typeDefs from '../src/graphql/schema';
 import resolvers from '../src/graphql/resolvers';
 import User from '../src/models/user';
 import app from '../src/';
-import config from '../src/config/config'
- 
+import config from '../src/config/config';
+
 const should = chai.should();
 
 const constructServer = (context = {}) =>
@@ -97,7 +97,7 @@ describe('Endpoints', () => {
   describe('POST /api/auth', () => {
     test('should return valid token', async () => {
       const basicAuth = Buffer.from(
-        `${config.username}:${config.password}`
+        `${config.username}:${config.password}`,
       ).toString('base64');
       const resp = await request(app.callback())
         .post('/api/auth')
@@ -112,8 +112,6 @@ describe('Endpoints', () => {
       const { query } = createTestClient(server);
       const resCreateUser = await createUser();
       const id = resCreateUser.data.createUser.id;
-      const name = resCreateUser.data.createUser.name;
-      const email = resCreateUser.data.createUser.email;
       const res = await query({ query: GET_USER, variables: { id } });
       should.not.exist(res);
     });
@@ -146,8 +144,7 @@ describe('Endpoints', () => {
         },
       });
       const updatedUser = await User.findById(res.data.updateProfile.id);
-      should.not.exist(res);
+      should.not.exist(updatedUser);
     });
   });
 });
-*/
