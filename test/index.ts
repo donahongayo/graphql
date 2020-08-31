@@ -12,11 +12,12 @@ import config from '../src/config/config'
  
 const should = chai.should();
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: () => ({}),
-});
+const constructServer = (context = {}) =>
+  new ApolloServer({
+    typeDefs,
+    resolvers,
+    context,
+  });
 
 const GET_USER = gql`
   query getUser($id: ID!) {
@@ -60,6 +61,7 @@ const testUserData = {
   password: 'testpassword',
 };
 const createUser = () => {
+  const server = constructServer();
   const { mutate } = createTestClient(server);
   return mutate({
     mutation: CREATE_USER,
